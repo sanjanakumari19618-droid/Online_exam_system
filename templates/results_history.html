@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Results — Online Exam System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>📊 My Exam History</h2>
+        <p class="text-muted">{{ name }} ke saare exam attempts neeche hain.</p>
+
+        {% if all_results %}
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Status</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in all_results %}
+                <tr>
+                    <td class="text-muted">{{ loop.index }}</td>
+                    <td><strong>{{ r.score }} / {{ r.total }}</strong></td>
+                    <td>{{ r.percentage }}%</td>
+                    <td>
+                        {% if r.percentage >= 60 %}
+                            <span class="badge badge-green">✅ Passed</span>
+                        {% else %}
+                            <span class="badge badge-red">❌ Failed</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-muted">{{ r.attempted_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="text-center mt-3">
+            <p style="font-size:3rem;">📭</p>
+            <p class="text-muted">Abhi tak koi exam attempt nahi kiya.</p>
+            <a href="{{ url_for('exam') }}" class="btn btn-primary mt-2">🚀 Pehla Exam Do</a>
+        </div>
+        {% endif %}
+
+        <hr class="divider">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">← Dashboard</a>
+    </div>
+</div>
+{% endblock %}

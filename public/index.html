@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Exam System</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <h1>Online Exam System</h1>
+      </header>
+
+      <main>
+        <section class="panel intro">
+          <h2>Welcome</h2>
+          <p>Answer the questions below and submit your exam for instant scoring.</p>
+        </section>
+
+        <section class="panel quiz-panel">
+          <div id="loading" class="status">Loading questions...</div>
+          <form id="exam-form" class="hidden">
+            <div id="questions"></div>
+            <button type="submit" class="submit-btn">Submit Exam</button>
+          </form>
+        </section>
+
+        <section id="result-panel" class="panel result-panel hidden">
+          <h2>Exam Result</h2>
+          <div id="result-summary"></div>
+          <div id="result-details" class="result-details"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

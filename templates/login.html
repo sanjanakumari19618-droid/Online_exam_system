@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Login — Online Exam System{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="card">
+        <h2>🔐 Login</h2>
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email"
+                       placeholder="apna email enter karein" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="password enter karein" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                Login →
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Account nahi hai?
+            <a href="{{ url_for('register') }}">Register karein</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

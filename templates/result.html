@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Result — Online Exam System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+
+        <!-- ── Result Hero ── -->
+        <div class="result-hero">
+            <h2>🎉 Exam Result</h2>
+
+            <div class="score-circle {{ 'pass' if passed else 'fail' }}">
+                {{ percentage }}%
+            </div>
+
+            <div>
+                {% if passed %}
+                    <span class="badge-pass">✅ Passed!</span>
+                {% else %}
+                    <span class="badge-fail">❌ Failed</span>
+                {% endif %}
+            </div>
+
+            <p class="mt-2" style="font-size:1.15rem;">
+                Aapne <strong>{{ score }}</strong> out of <strong>{{ total }}</strong> questions sahi kiye.
+            </p>
+            <p class="text-muted">Pass hone ke liye 60% chahiye.</p>
+        </div>
+
+        <hr class="divider">
+
+        <!-- ── Answer Breakdown ── -->
+        <h3 style="margin-bottom:16px;">📋 Answer Breakdown</h3>
+        <div class="result-details">
+            {% for r in results %}
+            <div class="result-item {{ 'correct' if r.is_correct else 'incorrect' }}">
+                <span class="result-icon">{{ '✅' if r.is_correct else '❌' }}</span>
+                <strong>Q{{ loop.index }}:</strong> {{ r.question }}<br>
+                <span style="margin-left:22px;">
+                    <strong>Aapka jawab:</strong> {{ r.submitted }}<br>
+                    {% if not r.is_correct %}
+                    <strong>Sahi jawab:</strong> {{ r.correct_answer }}
+                    {% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <hr class="divider">
+
+        <!-- ── Actions ── -->
+        <div style="display:flex; gap:14px; flex-wrap:wrap;">
+            <a href="{{ url_for('exam') }}" class="btn btn-primary">🔁 Dobara Exam Do</a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">🏠 Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
