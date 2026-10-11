@@ -4,35 +4,38 @@
 {% block content %}
 <div class="auth-wrapper">
     <div class="card">
-        <h2>📋 Register</h2>
+        <div class="auth-header">
+            <h2>📝 Register Account</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Join and start taking certified tests</p>
+        </div>
 
         <form method="POST" action="{{ url_for('register') }}">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" name="name"
-                       placeholder="apna pura naam enter karein" required autofocus>
+                <input type="text" id="name" name="name" class="form-control"
+                       placeholder="Rahul Sharma" required autofocus>
             </div>
 
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email"
-                       placeholder="apna email enter karein" required>
+                <input type="email" id="email" name="email" class="form-control"
+                       placeholder="rahul@example.com" required>
             </div>
 
             <div class="form-group">
-                <label for="password">Password <span class="text-muted">(kam se kam 6 characters)</span></label>
-                <input type="password" id="password" name="password"
-                       placeholder="strong password banaein" required minlength="6">
+                <label for="password">Password <span style="font-size:0.8rem; color:var(--text-muted);">(min 6 characters)</span></label>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="••••••••" required minlength="6">
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">
-                Register ✅
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top:10px;">
+                Create Account ✅
             </button>
         </form>
 
         <div class="auth-footer">
-            Already account hai?
-            <a href="{{ url_for('home') }}">Login karein</a>
+            Already have an account?
+            <a href="{{ url_for('home') }}">Sign In</a>
         </div>
     </div>
 </div>

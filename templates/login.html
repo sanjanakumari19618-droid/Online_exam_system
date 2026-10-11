@@ -4,25 +4,41 @@
 {% block content %}
 <div class="auth-wrapper">
     <div class="card">
-        <h2>🔐 Login</h2>
+        <div class="auth-header">
+            <h2>🔐 Sign In</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Online Examination Portal</p>
+        </div>
 
         <form method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email"
-                       placeholder="apna email enter karein" required autofocus>
+                <input type="email" id="email" name="email" class="form-control"
+                       placeholder="user@example.com" required autofocus>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password"
-                       placeholder="password enter karein" required>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="••••••••" required>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">
-                Login →
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top:10px;">
+                Sign In →
             </button>
         </form>
+
+        <!-- Quick Demo Credentials Fill -->
+        <div style="margin-top:22px; padding:12px; background:var(--bg); border:1px dashed var(--panel-border); border-radius:10px; font-size:0.83rem; text-align:center;">
+            <p style="color:var(--text-muted); margin-bottom:8px; font-weight:600;">⚡ Quick Demo Login:</p>
+            <div style="display:flex; justify-content:center; gap:8px;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="fillCreds('student@exam.com', 'student123')">
+                    Student Login
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="fillCreds('admin@exam.com', 'admin123')">
+                    Admin Login
+                </button>
+            </div>
+        </div>
 
         <div class="auth-footer">
             Account nahi hai?
@@ -30,4 +46,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    function fillCreds(email, pass) {
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = pass;
+    }
+</script>
 {% endblock %}

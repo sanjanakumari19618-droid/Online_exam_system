@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Certificate of Completion — Online Exam System{% endblock %}
+
+{% block content %}
+<div class="container">
+    
+    <!-- Action controls (hidden when printed) -->
+    <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">
+            ← Wapas Dashboard
+        </a>
+        <div style="display:flex; gap:10px;">
+            <button onclick="window.print()" class="btn btn-success">
+                🖨️ Print / Download PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Formal Certificate Document ── -->
+    <div class="certificate-container" id="printable-certificate">
+        
+        <div class="cert-header">
+            <div style="font-size:2.8rem; margin-bottom:8px;">🎓</div>
+            <h1>Certificate of Completion</h1>
+            <p>Online Examination Assessment</p>
+        </div>
+
+        <div class="cert-body">
+            <p style="font-size:1.1rem; color:#475569; font-style:italic;">This is proudly presented to</p>
+            <div class="recipient-name">{{ user_name }}</div>
+            <p style="font-size:1.1rem; color:#475569; max-width:620px; margin:0 auto; line-height:1.7;">
+                for successfully passing the certified assessment in 
+                <strong style="color:#1e3a8a;">{{ res.subject_name }}</strong> 
+                with an outstanding performance score of <strong>{{ res.percentage }}%</strong> ({{ res.score }}/{{ res.total }} marks).
+            </p>
+        </div>
+
+        <div class="cert-footer">
+            <div class="cert-sign">
+                <div style="font-family:cursive; font-size:1.2rem; color:#1e3a8a; margin-bottom:2px;">Online Exam System</div>
+                Examination Controller
+            </div>
+
+            <div class="cert-seal">
+                <span>VERIFIED</span>
+                <span>★ ★ ★</span>
+                <span>AUTHENTIC</span>
+            </div>
+
+            <div class="cert-sign">
+                <div style="font-size:0.95rem; color:#334155; margin-bottom:4px;">{{ res.attempted_at[:10] }}</div>
+                Date of Issue
+            </div>
+        </div>
+
+        <div style="margin-top:34px; font-size:0.75rem; color:#94a3b8; letter-spacing:1px;">
+            CERTIFICATE ID: <strong>{{ cert_serial }}</strong> &nbsp;|&nbsp; VERIFIED BY ONLINE EXAM SYSTEM
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard — Online Exam System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.6rem; font-weight:800;">🏆 Platform Leaderboard</h2>
+                <p style="color:var(--text-muted); font-size:0.95rem;">Top rankers and highest scores across all exams.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('exam') }}" class="btn btn-primary btn-sm">
+                    ⚡ Take Exam & Climb Rank
+                </a>
+            </div>
+        </div>
+
+        {% if top_scores %}
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th style="width:70px;">Rank</th>
+                        <th>Student Name</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                        <th>Accuracy</th>
+                        <th>Time Spent</th>
+                        <th>Attempted On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in top_scores %}
+                    <tr>
+                        <td>
+                            {% if loop.index == 1 %}
+                                <span style="font-size:1.4rem;">🥇</span>
+                            {% elif loop.index == 2 %}
+                                <span style="font-size:1.4rem;">🥈</span>
+                            {% elif loop.index == 3 %}
+                                <span style="font-size:1.4rem;">🥉</span>
+                            {% else %}
+                                <strong style="color:var(--text-muted); padding-left:8px;">#{{ loop.index }}</strong>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ s.user_name }}</strong>
+                            {% if s.user_name == session.name %}
+                                <span class="badge badge-blue" style="font-size:0.7rem; margin-left:4px;">You</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ s.subject_name }}</td>
+                        <td>{{ s.score }}/{{ s.total }}</td>
+                        <td>
+                            <strong style="color:{{ 'var(--success)' if s.percentage >= 60 else 'var(--danger)' }};">
+                                {{ s.percentage }}%
+                            </strong>
+                        </td>
+                        <td>{{ (s.time_taken // 60) }}m {{ (s.time_taken % 60) }}s</td>
+                        <td style="color:var(--text-muted); font-size:0.85rem;">{{ s.attempted_at[:16] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align:center; padding:40px 10px;">
+            <p style="font-size:3rem;">🏅</p>
+            <p style="color:var(--text-muted);">Abhi tak koi score record nahi hua hai. Pehle ranker bano!</p>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:24px;">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

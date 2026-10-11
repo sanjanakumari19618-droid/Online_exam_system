@@ -1,51 +1,83 @@
 {% extends "base.html" %}
-{% block title %}My Results — Online Exam System{% endblock %}
+{% block title %}My Exam History — Online Exam System{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="card">
-        <h2>📊 My Exam History</h2>
-        <p class="text-muted">{{ name }} ke saare exam attempts neeche hain.</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:1.6rem; font-weight:800;">📊 My Exam History</h2>
+                <p style="color:var(--text-muted); font-size:0.95rem;">{{ name }} ke dwara diye gaye sabhi tests ka record.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('exam') }}" class="btn btn-primary btn-sm">⚡ Take New Test</a>
+            </div>
+        </div>
 
         {% if all_results %}
-        <table class="results-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Score</th>
-                    <th>Percentage</th>
-                    <th>Status</th>
-                    <th>Date & Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in all_results %}
-                <tr>
-                    <td class="text-muted">{{ loop.index }}</td>
-                    <td><strong>{{ r.score }} / {{ r.total }}</strong></td>
-                    <td>{{ r.percentage }}%</td>
-                    <td>
-                        {% if r.percentage >= 60 %}
-                            <span class="badge badge-green">✅ Passed</span>
-                        {% else %}
-                            <span class="badge badge-red">❌ Failed</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-muted">{{ r.attempted_at }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th style="width:40px;">#</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                        <th>Proctor Status</th>
+                        <th>Date & Time</th>
+                        <th>Certificate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in all_results %}
+                    <tr>
+                        <td style="color:var(--text-muted);">{{ loop.index }}</td>
+                        <td><strong>{{ r.subject_name }}</strong></td>
+                        <td>{{ r.score }} / {{ r.total }}</td>
+                        <td><strong>{{ r.percentage }}%</strong></td>
+                        <td>
+                            {% if r.percentage >= 60 %}
+                                <span class="badge badge-green">Passed</span>
+                            {% else %}
+                                <span class="badge badge-red">Failed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ (r.time_taken // 60) }}m {{ (r.time_taken % 60) }}s</td>
+                        <td>
+                            {% if r.tab_switches == 0 %}
+                                <span class="badge badge-green">Clean</span>
+                            {% else %}
+                                <span class="badge badge-amber">{{ r.tab_switches }} Warnings</span>
+                            {% endif %}
+                        </td>
+                        <td style="color:var(--text-muted); font-size:0.85rem;">{{ r.attempted_at[:16] }}</td>
+                        <td>
+                            {% if r.percentage >= 60 %}
+                                <a href="{{ url_for('certificate', result_id=r.id) }}" class="btn btn-outline btn-sm" style="font-size:0.8rem; padding:4px 10px;">
+                                    📜 View PDF
+                                </a>
+                            {% else %}
+                                <span style="color:var(--text-muted); font-size:0.8rem;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <div class="text-center mt-3">
-            <p style="font-size:3rem;">📭</p>
-            <p class="text-muted">Abhi tak koi exam attempt nahi kiya.</p>
-            <a href="{{ url_for('exam') }}" class="btn btn-primary mt-2">🚀 Pehla Exam Do</a>
+        <div style="text-align:center; padding:40px 10px;">
+            <p style="font-size:3rem; margin-bottom:10px;">📭</p>
+            <p style="color:var(--text-muted); font-size:1rem;">Abhi tak koi exam attempt nahi kiya gaya.</p>
+            <a href="{{ url_for('exam') }}" class="btn btn-primary mt-2">🚀 Pehla Test Shuru Karein</a>
         </div>
         {% endif %}
 
-        <hr class="divider">
-        <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">← Dashboard</a>
+        <div style="margin-top:24px;">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+        </div>
     </div>
 </div>
 {% endblock %}

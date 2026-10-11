@@ -5,21 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Online Exam System{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        // Apply saved theme immediately before render
+        (function() {
+            const savedTheme = localStorage.getItem('exam_sys_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
 </head>
 <body>
 
 <!-- ── Navbar ── -->
 <nav class="navbar">
-    <span class="brand">📝 Online Exam System</span>
+    <a href="{{ url_for('home') }}" class="brand-link">
+        <span>📝 Online Exam</span>
+        <span class="brand-badge">PRO</span>
+    </a>
     <div class="nav-links">
+        <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Dark/Light Mode">
+            <span id="theme-icon">🌙</span>
+        </button>
+
         {% if session.get('user_id') %}
-            <span class="nav-user">👤 {{ session.name }}</span>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('results_history') }}">My Results</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+            <a href="{{ url_for('leaderboard') }}">🏆 Leaderboard</a>
+            <a href="{{ url_for('results_history') }}">📊 History</a>
+            
+            {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}" style="color:var(--warning); font-weight:700;">⚙️ Admin Panel</a>
+            {% endif %}
+
+            <span style="font-size: 0.85rem; color: var(--text-muted); margin-left: 6px;">
+                👤 {{ session.name }}
+            </span>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">🚪 Logout</a>
         {% else %}
             <a href="{{ url_for('home') }}">Login</a>
-            <a href="{{ url_for('register') }}">Register</a>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Sign Up</a>
         {% endif %}
     </div>
 </nav>
@@ -27,10 +49,12 @@
 <!-- ── Flash Messages ── -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <div class="container" style="margin-top:16px; margin-bottom:0;">
+    <div class="container" style="margin-top:20px; margin-bottom:0; padding-bottom: 0;">
       <ul class="flash-messages">
         {% for category, message in messages %}
-          <li class="flash-{{ category }}">{{ message }}</li>
+          <li class="flash-{{ category }}">
+            <span>ℹ️</span> {{ message }}
+          </li>
         {% endfor %}
       </ul>
     </div>
@@ -39,6 +63,30 @@
 
 <!-- ── Page Content ── -->
 {% block content %}{% endblock %}
+
+<script>
+    // Dark mode toggle functionality
+    const themeBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    function updateThemeIcon() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (themeIcon) {
+            themeIcon.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        }
+    }
+    updateThemeIcon();
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('exam_sys_theme', newTheme);
+            updateThemeIcon();
+        });
+    }
+</script>
 
 </body>
 </html>

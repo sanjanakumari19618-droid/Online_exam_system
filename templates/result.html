@@ -1,58 +1,132 @@
 {% extends "base.html" %}
-{% block title %}Result — Online Exam System{% endblock %}
+{% block title %}Result: {{ subject_name }} — Online Exam System{% endblock %}
 
 {% block content %}
+<!-- Confetti script for celebration -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <div class="container">
     <div class="card">
 
         <!-- ── Result Hero ── -->
         <div class="result-hero">
-            <h2>🎉 Exam Result</h2>
+            <h2 style="font-size:2rem; font-weight:800; margin-bottom:4px;">🎯 Exam Performance Summary</h2>
+            <p style="color:var(--text-muted); font-size:1rem;">Subject: <strong>{{ subject_name }}</strong></p>
 
-            <div class="score-circle {{ 'pass' if passed else 'fail' }}">
+            <div class="score-radial {{ 'pass' if passed else 'fail' }}">
                 {{ percentage }}%
             </div>
 
             <div>
                 {% if passed %}
-                    <span class="badge-pass">✅ Passed!</span>
+                    <span class="badge badge-green" style="font-size:1.1rem; padding:8px 22px;">🎉 Congratulations! Passed</span>
                 {% else %}
-                    <span class="badge-fail">❌ Failed</span>
+                    <span class="badge badge-red" style="font-size:1.1rem; padding:8px 22px;">❌ Needs Improvement (Failed)</span>
                 {% endif %}
             </div>
 
-            <p class="mt-2" style="font-size:1.15rem;">
+            <p style="margin-top:16px; font-size:1.15rem;">
                 Aapne <strong>{{ score }}</strong> out of <strong>{{ total }}</strong> questions sahi kiye.
             </p>
-            <p class="text-muted">Pass hone ke liye 60% chahiye.</p>
+
+            <!-- Metrics bar -->
+            <div style="display:flex; justify-content:center; gap:20px; margin-top:20px; flex-wrap:wrap;">
+                <div class="badge badge-blue">
+                    ⏱️ Time Taken: {{ (time_taken // 60) }}m {{ (time_taken % 60) }}s
+                </div>
+                <div class="badge {{ 'badge-green' if tab_switches == 0 else 'badge-amber' }}">
+                    🛡️ Proctor Status: {{ tab_switches }} Tab Switch(es)
+                </div>
+                <div class="badge badge-blue">
+                    🎯 Passing Criteria: 60%
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display:flex; justify-content:center; gap:16px; margin-top:28px; flex-wrap:wrap;">
+                {% if passed %}
+                <a href="{{ url_for('certificate', result_id=result_id) }}" class="btn btn-success" style="font-size:1rem;">
+                    📜 View & Print Certificate
+                </a>
+                {% endif %}
+                <a href="{{ url_for('exam') }}" class="btn btn-primary">
+                    🔁 Retake / New Exam
+                </a>
+                <a href="{{ url_for('leaderboard') }}" class="btn btn-outline">
+                    🏆 View Leaderboard
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                    🏠 Dashboard
+                </a>
+            </div>
         </div>
 
-        <hr class="divider">
+        <hr style="border:none; border-top:1px solid var(--panel-border); margin:32px 0;">
 
-        <!-- ── Answer Breakdown ── -->
-        <h3 style="margin-bottom:16px;">📋 Answer Breakdown</h3>
-        <div class="result-details">
+        <!-- ── Detailed Answer Breakdown ── -->
+        <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="font-size:1.3rem; font-weight:700;">📋 Answer Analysis & Explanations</h3>
+                <span style="font-size:0.85rem; color:var(--text-muted);">Detailed solution for all questions</span>
+            </div>
+
             {% for r in results %}
-            <div class="result-item {{ 'correct' if r.is_correct else 'incorrect' }}">
-                <span class="result-icon">{{ '✅' if r.is_correct else '❌' }}</span>
-                <strong>Q{{ loop.index }}:</strong> {{ r.question }}<br>
-                <span style="margin-left:22px;">
-                    <strong>Aapka jawab:</strong> {{ r.submitted }}<br>
+            <div class="review-card {{ 'correct' if r.is_correct else 'incorrect' }}">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                    <h4 style="font-size:1rem; font-weight:700;">
+                        {{ loop.index }}. {{ r.question }}
+                    </h4>
+                    <span>
+                        {% if r.is_correct %}
+                            <span class="badge badge-green">Correct (+1)</span>
+                        {% else %}
+                            <span class="badge badge-red">Incorrect (0)</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div style="font-size:0.92rem; margin:8px 0; line-height:1.6;">
+                    <div>
+                        <strong>Aapka Answer:</strong> 
+                        <span style="color:{{ 'var(--success)' if r.is_correct else 'var(--danger)' }}; font-weight:600;">
+                            {{ r.submitted }}
+                        </span>
+                    </div>
+
                     {% if not r.is_correct %}
-                    <strong>Sahi jawab:</strong> {{ r.correct_answer }}
+                    <div style="margin-top:4px;">
+                        <strong>Sahi Answer:</strong> 
+                        <span style="color:var(--success); font-weight:700;">
+                            Option {{ r.correct_opt }}: {{ r.correct_answer }}
+                        </span>
+                    </div>
                     {% endif %}
-                </span>
+                </div>
+
+                <!-- Explanation Box -->
+                <div class="explanation-box">
+                    <strong>💡 Explanation:</strong> {{ r.explanation }}
+                </div>
             </div>
             {% endfor %}
         </div>
 
-        <hr class="divider">
-
-        <!-- ── Actions ── -->
-        <div style="display:flex; gap:14px; flex-wrap:wrap;">
-            <a href="{{ url_for('exam') }}" class="btn btn-primary">🔁 Dobara Exam Do</a>
-            <a href="{{ url_for('dashboard') }}" class="btn btn-outline">🏠 Dashboard</a>
-        </div>
     </div>
 </div>
+
+{% if passed %}
+<script>
+    // Trigger celebration confetti
+    window.addEventListener('load', () => {
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    });
+</script>
+{% endif %}
+
 {% endblock %}

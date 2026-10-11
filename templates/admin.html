@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel — Online Exam System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:24px;">
+            <div>
+                <h2 style="font-size:1.7rem; font-weight:800; color:var(--primary);">⚙️ Admin Management Portal</h2>
+                <p style="color:var(--text-muted); font-size:0.92rem;">Questions create aur delete karein, aur students ki live performance monitor karein.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-sm">Student View Dashboard</a>
+            </div>
+        </div>
+
+        <!-- ── System Overview Stats ── -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👨‍🎓</div>
+                <div class="stat-value">{{ total_students }}</div>
+                <div class="stat-label">Registered Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-value">{{ total_questions }}</div>
+                <div class="stat-label">Active Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">{{ total_exams }}</div>
+                <div class="stat-label">Exams Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">{{ avg_platform_score }}%</div>
+                <div class="stat-label">Avg Platform Score</div>
+            </div>
+        </div>
+
+        <!-- ── Add New Question Form ── -->
+        <div style="margin-top:40px; background:var(--bg); border:1.5px solid var(--panel-border); border-radius:var(--radius); padding:26px;">
+            <h3 style="font-size:1.25rem; font-weight:700; margin-bottom:16px;">➕ Add New Question to Exam Bank</h3>
+            
+            <form method="POST" action="{{ url_for('admin_add_question') }}">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label>Subject / Category</label>
+                        <select name="subject_id" class="form-control" required>
+                            {% for s in subjects %}
+                                <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Difficulty Level</label>
+                        <select name="difficulty" class="form-control">
+                            <option value="easy">Easy (Beginner)</option>
+                            <option value="medium" selected>Medium (Standard)</option>
+                            <option value="hard">Hard (Advanced)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Question Text</label>
+                    <input type="text" name="question" class="form-control" placeholder="E.g. What is the output of print(2 ** 3)?" required>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label>Option A</label>
+                        <input type="text" name="option_a" class="form-control" placeholder="Option A text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Option B</label>
+                        <input type="text" name="option_b" class="form-control" placeholder="Option B text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Option C</label>
+                        <input type="text" name="option_c" class="form-control" placeholder="Option C text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Option D</label>
+                        <input type="text" name="option_d" class="form-control" placeholder="Option D text" required>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 2fr; gap:16px;">
+                    <div class="form-group">
+                        <label>Correct Answer Key</label>
+                        <select name="correct_answer" class="form-control" required>
+                            <option value="a">Option A</option>
+                            <option value="b">Option B</option>
+                            <option value="c">Option C</option>
+                            <option value="d">Option D</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Explanation (Solution note for students)</label>
+                        <input type="text" name="explanation" class="form-control" placeholder="Explain why this answer is correct...">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:8px;">
+                    💾 Save Question to Bank
+                </button>
+            </form>
+        </div>
+
+        <!-- ── Manage Questions Bank ── -->
+        <div style="margin-top:45px;">
+            <h3 style="font-size:1.25rem; font-weight:700; margin-bottom:16px;">
+                📚 All Questions in Bank ({{ questions | length }})
+            </h3>
+            
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;">#</th>
+                            <th>Subject</th>
+                            <th>Question</th>
+                            <th>Correct</th>
+                            <th>Difficulty</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q in questions %}
+                        <tr>
+                            <td style="color:var(--text-muted);">{{ q.id }}</td>
+                            <td><span class="badge badge-blue">{{ q.subject_name or 'General' }}</span></td>
+                            <td>
+                                <strong>{{ q.question }}</strong>
+                                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                                    A: {{ q.option_a }} | B: {{ q.option_b }} | C: {{ q.option_c }} | D: {{ q.option_d }}
+                                </div>
+                            </td>
+                            <td><span class="badge badge-green">{{ q.correct_answer | upper }}</span></td>
+                            <td><span class="badge badge-amber">{{ q.difficulty or 'medium' }}</span></td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin_delete_question', question_id=q.id) }}" onsubmit="return confirm('Kya aap sach me ye question delete karna chahte hain?');">
+                                    <button type="submit" class="btn btn-danger btn-sm" style="padding:4px 10px; font-size:0.78rem;">
+                                        🗑️ Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── Student Submissions Audit ── -->
+        <div style="margin-top:45px;">
+            <h3 style="font-size:1.25rem; font-weight:700; margin-bottom:16px;">
+                👥 Recent Student Exam Submissions
+            </h3>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Subject</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Anti-Cheat</th>
+                            <th>Submitted On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in recent_submissions %}
+                        <tr>
+                            <td>
+                                <strong>{{ r.user_name }}</strong>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">{{ r.user_email }}</div>
+                            </td>
+                            <td>{{ r.subject_name }}</td>
+                            <td><strong>{{ r.score }}/{{ r.total }} ({{ r.percentage }}%)</strong></td>
+                            <td>
+                                {% if r.percentage >= 60 %}
+                                    <span class="badge badge-green">Passed</span>
+                                {% else %}
+                                    <span class="badge badge-red">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ (r.time_taken // 60) }}m {{ (r.time_taken % 60) }}s</td>
+                            <td>
+                                {% if r.tab_switches == 0 %}
+                                    <span class="badge badge-green">0 Clean</span>
+                                {% else %}
+                                    <span class="badge badge-red">{{ r.tab_switches }} Switches</span>
+                                {% endif %}
+                            </td>
+                            <td style="color:var(--text-muted); font-size:0.85rem;">{{ r.attempted_at[:16] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
